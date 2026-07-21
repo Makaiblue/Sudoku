@@ -1,0 +1,426 @@
+/* ===== Variáveis de Tema (Claro como padrão) ===== */
+:root {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --border: #d1d5db;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --primary: #4f46e5;
+  --primary-light: #e0e7ff;
+  --highlight-row: #ede9fe;
+  --highlight-col: #ede9fe;
+  --highlight-block: #ddd6fe;
+  --highlight-same-number: #c7d2fe;
+  --cell-given: #111827;
+  --cell-user: #4f46e5;
+  --cell-error-bg: #fee2e2;
+  --cell-error-text: #dc2626;
+  --cell-correct-bg: #dcfce7;
+  --cell-correct-text: #16a34a;
+  --btn-bg: #f3f4f6;
+  --btn-text: #1f2937;
+  --btn-hover: #e5e7eb;
+  --btn-active: #4f46e5;
+  --btn-active-text: #ffffff;
+  --modal-overlay: rgba(0,0,0,0.4);
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --radius: 12px;
+  --transition: 0.2s ease;
+}
+
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --border: #334155;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --primary: #818cf8;
+  --primary-light: #1e1b4b;
+  --highlight-row: #1e1b4b;
+  --highlight-col: #1e1b4b;
+  --highlight-block: #312e81;
+  --highlight-same-number: #3730a3;
+  --cell-given: #f1f5f9;
+  --cell-user: #818cf8;
+  --cell-error-bg: #7f1d1d;
+  --cell-error-text: #fca5a5;
+  --cell-correct-bg: #14532d;
+  --cell-correct-text: #86efac;
+  --btn-bg: #334155;
+  --btn-text: #e2e8f0;
+  --btn-hover: #475569;
+  --btn-active: #818cf8;
+  --btn-active-text: #0f172a;
+  --modal-overlay: rgba(0,0,0,0.7);
+  --shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* ===== Reset e Base ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+/* ===== Layout Principal ===== */
+.app-container {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* ===== Header ===== */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--primary);
+  margin-bottom: -0.25rem;
+}
+
+.timer {
+  font-size: 1.5rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  background: var(--surface);
+  padding: 0.25rem 1rem;
+  border-radius: 2rem;
+  box-shadow: var(--shadow);
+  color: var(--text-secondary);
+  transition: background var(--transition), color var(--transition);
+}
+
+/* ===== Board (Grid 9x9) ===== */
+.board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: 450px;
+  background: var(--surface);
+  border: 2px solid var(--text-primary);
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1rem, 5vw, 1.8rem);
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.1s ease, color 0.1s ease, transform 0.1s ease;
+  position: relative;
+}
+
+/* Bordas grossas a cada 3 células (delimitação dos blocos 3x3) */
+.cell:nth-child(3n) {
+  border-right: 2px solid var(--text-primary);
+}
+.cell:nth-child(n+19):nth-child(-n+27),
+.cell:nth-child(n+46):nth-child(-n+54) {
+  border-bottom: 2px solid var(--text-primary);
+}
+/* Última linha sem borda extra inferior */
+.cell:nth-child(n+73):nth-child(-n+81) {
+  border-bottom: 2px solid var(--text-primary);
+}
+/* Última coluna (já coberta) */
+
+/* Célula fixa (given) */
+.cell.given {
+  font-weight: 700;
+  color: var(--cell-given);
+  background-color: transparent;
+}
+
+/* Célula editável (user) */
+.cell.user {
+  color: var(--cell-user);
+}
+
+/* ===== Highlights ===== */
+.cell.selected {
+  background-color: var(--primary-light);
+  box-shadow: inset 0 0 0 2px var(--primary);
+}
+
+.cell.same-row {
+  background-color: var(--highlight-row);
+}
+
+.cell.same-col {
+  background-color: var(--highlight-col);
+}
+
+.cell.same-block {
+  background-color: var(--highlight-block);
+}
+
+.cell.same-number {
+  background-color: var(--highlight-same-number);
+}
+
+/* Combinação: a selecionada permanece com destaque mais forte */
+.cell.selected.same-row,
+.cell.selected.same-col,
+.cell.selected.same-block {
+  background-color: var(--primary-light);
+}
+
+/* ===== Feedback de Erro/Acerto ===== */
+.cell.error {
+  animation: shake 0.3s ease;
+  background-color: var(--cell-error-bg) !important;
+  color: var(--cell-error-text) !important;
+}
+
+.cell.correct {
+  animation: pop 0.2s ease;
+  background-color: var(--cell-correct-bg) !important;
+  color: var(--cell-correct-text) !important;
+}
+
+/* Keyframes */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* ===== Teclado Numérico ===== */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 450px;
+}
+
+.keypad-btn {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  cursor: pointer;
+  transition: background var(--transition), transform 0.1s ease, box-shadow var(--transition);
+  box-shadow: var(--shadow);
+  user-select: none;
+}
+
+.keypad-btn:active {
+  transform: scale(0.95);
+}
+
+.keypad-btn:hover {
+  background: var(--btn-hover);
+}
+
+.keypad-btn.active {
+  background: var(--btn-active);
+  color: var(--btn-active-text);
+}
+
+/* Último botão (delete) ocupa 2 colunas para alinhamento */
+.keypad-btn.delete {
+  grid-column: span 2;
+  aspect-ratio: auto;
+  height: 100%;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* ===== Botões de Ação ===== */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 450px;
+}
+
+.action-btn {
+  flex: 1 1 auto;
+  min-width: 70px;
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 2rem;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  cursor: pointer;
+  transition: background var(--transition), transform 0.1s ease, box-shadow var(--transition);
+  box-shadow: var(--shadow);
+  white-space: nowrap;
+}
+
+.action-btn:active {
+  transform: scale(0.97);
+}
+
+.action-btn:hover {
+  background: var(--btn-hover);
+}
+
+.action-btn.primary {
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+}
+
+.action-btn.primary:hover {
+  opacity: 0.9;
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 2rem 1.5rem;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  transition: background var(--transition);
+}
+
+.modal h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.modal p {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.modal .difficulty-options {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.difficulty-btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 0.6rem 0.5rem;
+  font-weight: 600;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.difficulty-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.difficulty-btn.selected {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ===== Utilitarios ===== */
+.hidden {
+  display: none !important;
+}
+
+button {
+  font-family: inherit;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===== Responsivo para telas muito pequenas ===== */
+@media (max-width: 360px) {
+  .title {
+    font-size: 1.5rem;
+  }
+  .cell {
+    font-size: clamp(0.9rem, 4.5vw, 1.3rem);
+  }
+  .keypad-btn {
+    font-size: 1.1rem;
+  }
+}

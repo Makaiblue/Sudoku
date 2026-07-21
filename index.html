@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sudoku</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Cabeçalho -->
+    <header class="header">
+      <h1 class="title">SUDOKU</h1>
+      <div class="timer" id="timer">00:00</div>
+    </header>
+
+    <!-- Tabuleiro -->
+    <div class="board" id="board"></div>
+
+    <!-- Teclado numérico -->
+    <div class="keypad" id="keypad"></div>
+
+    <!-- Botões de ação -->
+    <div class="actions">
+      <button class="action-btn primary" id="btn-new-game">Novo Jogo</button>
+      <button class="action-btn hidden" id="btn-continue">Continuar</button>
+      <button class="action-btn hidden" id="btn-hint">Dica</button>
+      <button class="action-btn hidden" id="btn-clear">Apagar</button>
+      <button class="action-btn hidden" id="btn-check">Verificar</button>
+      <button class="action-btn" id="btn-theme">🌓 Tema</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay hidden" id="modal-overlay">
+    <div class="modal" id="modal-content"></div>
+  </div>
+
+  <!-- Scripts em ordem de dependência -->
+  <script src="js/theme.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/sudoku.js"></script>
+  <script src="js/board.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
